@@ -93,7 +93,7 @@ class GravityField:
         #plot only history of objects per day for faster simuluaton drawing
         for obj in self.history[i*24]:
             p = plt.scatter(obj.x, obj.y, color=obj.color, s = obj.size)
-            plt.legend(["Sun", "Mercury","Venus", "Earth", "Moon","Mars", "Jupiter", "Saturn", "Uranus", "Neptun"], loc = "upper right")
+            plt.legend(["Sun", "Mercury","Venus", "Earth", "Moon","Mars", "Jupiter", "Saturn", "Uranus", "Neptune"], loc = "upper right")
             
 
 print("Gravitational field simulation")
@@ -130,24 +130,24 @@ field.add_body(Venus)
 field.add_body(Earth)
 field.add_body(Moon)
 field.add_body(Mars)
-# field.add_body(Jupiter)
-# field.add_body(Saturn)
-# field.add_body(Uranus)
-# field.add_body(Neptune)
+field.add_body(Jupiter)
+field.add_body(Saturn)
+field.add_body(Uranus)
+field.add_body(Neptune)
 #simulate 1.2 year
 # 360*24*1.2 = 10368
 field.simulate_n_ticks((10368))
 fig = plt.figure()
 #fix boundaries of animation of simuleted env
 #for inner circle
-maxlen = 250e9
+#maxlen = 250e9
 #for whole system
-#maxlen = 50e11
+maxlen = 50e11
 plt.axis([-maxlen, maxlen, -maxlen, maxlen])
 plt.title("Solar system simulation")
 plt.style.use('dark_background')
 animator = animation.FuncAnimation(fig, field.animate, frames=375, interval=2, fargs=(fig,), save_count=400)
 writergif = animation.PillowWriter(fps=30)
-#animator.save('solarsystemanimation.gif', writergif)
-animator.save('solarsysteminnercicleanimation.gif', writergif)
+animator.save('solarsystemanimation.gif', writergif)
+#animator.save('solarsysteminnercicleanimation.gif', writergif)
 plt.show()
