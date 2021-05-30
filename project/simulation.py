@@ -1,15 +1,11 @@
 import copy
 import matplotlib.pyplot as plt
-from matplotlib import animation, rc
-from IPython.display import HTML
-from mpl_toolkits.mplot3d import Axes3D
-import mpl_toolkits.mplot3d.axes3d as p3
-import pandas as pd
+from matplotlib import animation
 import math
 
 Gconst = 6.67408e-11
-#Gconst = 5.76288e-7
 #Gconst = 1
+base_size = 5
 class GravitationalObject:
     def __init__(self, x0, y0, vx0, vy0, mass, size = 1, color='skyblue'):
         self.x = x0
@@ -36,23 +32,12 @@ class GravitationalObject:
         # Compute the direction of the force.
         fx =force * dx/r
         fy =force * dy/r
-        acc_x = fx/self.mass #* ((24*3600)**2)/1000
-        acc_y = fy/self.mass #* ((24*3600)**2)/1000
+        acc_x = fx/self.mass
+        acc_y = fy/self.mass
         if (other.x <= self.x):
             acc_x = -acc_x
         if (other.y <= self.y):
             acc_y = -acc_y
-    
-        # if(self.x != other.x):
-        #     force_x = Gconst*self.mass*other.mass/((abs(self.x-other.x))**2)
-        #     acc_x = force_x/self.mass
-        #     if (other.x <= self.x) and (self.vx >= 0):
-        #         acc_x = -acc_x
-        # if(self.y != other.y):
-        #     force_y = Gconst*self.mass*other.mass/((abs(self.y-other.y))**2)
-        #     acc_y = force_y/self.mass
-        #     if (other.y <= self.y) and (self.vy >= 0):
-        #         acc_y = -acc_y
         return [acc_x, acc_y]
 
     def move_a_tick(self, accelerations, tick=1):
@@ -91,8 +76,8 @@ class GravityField:
                     acc[1] = acc[1] + accelerations[1]                    
             objects_acc.append(acc)
 
-        #calculate new positions of objects: tick means t = 1
-        t = 3600*24
+        #calculate new positions of objects: tick means number of seconds
+        t = 3600
         for x, obj in enumerate(self.objects):
             obj.move_a_tick(objects_acc[x], t)
 
@@ -102,31 +87,67 @@ class GravityField:
 
     def animate(self, i, arg):
         arg.clf()
-        plt.axis([-1.65e11, 1.65e11, -1.65e11, 1.65e11])
-        for obj in self.history[i]:
+        plt.axis([-maxlen, maxlen, -maxlen, maxlen])
+        plt.title("Solar system simulation")
+
+        #plot only history of objects per day for faster simuluaton drawing
+        for obj in self.history[i*24]:
             p = plt.scatter(obj.x, obj.y, color=obj.color, s = obj.size)
+            plt.legend(["Sun", "Mercury","Venus", "Earth", "Moon","Mars", "Jupiter", "Saturn", "Uranus", "Neptun"], loc = "upper right")
             
 
 print("Gravitational field simulation")
 #Sun at center of galaxy
-obj = GravitationalObject(0.0, 0.0, 0.0, 0.0, 1.989e30, 500, 'yellow')
+Sun = GravitationalObject(0.0, 0.0, 0.0, 0.0, 1.989e30, base_size*50, 'yellow')
 #Earth at 1 AU from Sun
-obj2 = GravitationalObject(0.0, 149597870000, 30000, 0.0, 5.97e24, 50, 'skyblue')
+Earth = GravitationalObject(0.0, 149597870000, 30000, 0.0, 5.97e24, base_size*2.61, 'royalblue')
 #Moon
-obj3 = GravitationalObject(0.0, 149597870000+384399000, 30000+1023,0.0, 7.347673e22, 10, 'grey')
-#obj = GravitationalObject(100, 100, 10, -10, 500)
-#obj2 = GravitationalObject(-100, -40, -10, 10, 1000)
-#obj3 = GravitationalObject(0, 0, 0, 0, 80000)
-field = GravityField()
-field.add_body(obj)
-field.add_body(obj2)
-field.add_body(obj3)
-print(field)
-field.simulate_n_ticks(360)
-fig = plt.figure()
+Moon = GravitationalObject(0.0, 149597870000+384259000, 30000+1023,0.0, 7.347673e22, base_size*0.71, 'white')
 
-plt.axis([-1.65e11, 1.65e11, -1.65e11, 1.65e11])
+#Mercury 
+Mercury = GravitationalObject(57.9e9,0.0,0.0,-47400,0.33e24,size=base_size,color='silver')
+#Venus
+Venus = GravitationalObject(0.0, -108.2e9, -35.0e3, 0.0, 4.87e24, size=base_size*2.48, color='slategray')
+
+#Mars
+Mars = GravitationalObject(-227.9e9, 0.0, 0.0, 24.1e3, mass=0.642e24, size=base_size*1.39, color='maroon')
+
+#Jupiter
+Jupiter = GravitationalObject(778.6e9,0.0,0.0,-13.1e3, mass=1898e24, size= base_size*29.3, color='tan')
+
+#Saturn
+Saturn = GravitationalObject(-1433.5e9, 0.0, 0.0, 9.7e3, mass=568e24, size=base_size*24.7, color='darkkhaki')
+
+#Uranus
+Uranus = GravitationalObject(0.0, 2872.5e9, 6.8e3, 0.0,  mass=86.8, size=base_size*10.48, color='mediumspringgreen')
+
+#Neptune
+Neptune = GravitationalObject(0.0, -4495.1e9, -5.4e3, 0.0, mass=102e24, size=base_size*10.15, color='cyan')
+field = GravityField()
+field.add_body(Sun)
+field.add_body(Mercury)
+field.add_body(Venus)
+field.add_body(Earth)
+field.add_body(Moon)
+field.add_body(Mars)
+# field.add_body(Jupiter)
+# field.add_body(Saturn)
+# field.add_body(Uranus)
+# field.add_body(Neptune)
+#simulate 1.2 year
+# 360*24*1.2 = 10368
+field.simulate_n_ticks((10368))
+fig = plt.figure()
+#fix boundaries of animation of simuleted env
+#for inner circle
+maxlen = 250e9
+#for whole system
+#maxlen = 50e11
+plt.axis([-maxlen, maxlen, -maxlen, maxlen])
+plt.title("Solar system simulation")
 plt.style.use('dark_background')
-animator = animation.FuncAnimation(fig, field.animate,  fargs=(fig,))
+animator = animation.FuncAnimation(fig, field.animate, frames=375, interval=2, fargs=(fig,), save_count=400)
+writergif = animation.PillowWriter(fps=30)
+#animator.save('solarsystemanimation.gif', writergif)
+animator.save('solarsysteminnercicleanimation.gif', writergif)
 plt.show()
-print(field.history)
