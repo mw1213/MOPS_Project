@@ -87,13 +87,14 @@ class GravityField:
 
     def animate(self, i, arg):
         arg.clf()
-        plt.axis([-maxlen, maxlen, -maxlen, maxlen])
+        #plt.axis([-maxlen, maxlen, -maxlen, maxlen])
         plt.title("Solar system simulation")
 
         #plot only history of objects per day for faster simuluaton drawing
         for obj in self.history[i*24]:
             p = plt.scatter(obj.x, obj.y, color=obj.color, s = obj.size)
-            plt.legend(["Sun", "Mercury","Venus", "Earth", "Moon","Mars", "Jupiter", "Saturn", "Uranus", "Neptune"], loc = "upper right")
+            #plt.legend(["Sun", "Mercury","Venus", "Earth", "Moon","Mars", "Jupiter", "Saturn", "Uranus", "Neptune"], loc = "upper right")
+            plt.legend(["Sun", "Earth", "Moon"], loc = "upper right")
             
 
 print("Gravitational field simulation")
@@ -125,15 +126,15 @@ Uranus = GravitationalObject(0.0, 2872.5e9, 6.8e3, 0.0,  mass=86.8, size=base_si
 Neptune = GravitationalObject(0.0, -4495.1e9, -5.4e3, 0.0, mass=102e24, size=base_size*10.15, color='cyan')
 field = GravityField()
 field.add_body(Sun)
-field.add_body(Mercury)
-field.add_body(Venus)
+# field.add_body(Mercury)
+# field.add_body(Venus)
 field.add_body(Earth)
 field.add_body(Moon)
-field.add_body(Mars)
-field.add_body(Jupiter)
-field.add_body(Saturn)
-field.add_body(Uranus)
-field.add_body(Neptune)
+# field.add_body(Mars)
+# field.add_body(Jupiter)
+# field.add_body(Saturn)
+# field.add_body(Uranus)
+# field.add_body(Neptune)
 #simulate 1.2 year
 # 360*24*1.2 = 10368
 field.simulate_n_ticks((10368))
@@ -143,11 +144,12 @@ fig = plt.figure()
 #maxlen = 250e9
 #for whole system
 maxlen = 50e11
-plt.axis([-maxlen, maxlen, -maxlen, maxlen])
+#plt.axis([-maxlen, maxlen, -maxlen, maxlen])
 plt.title("Solar system simulation")
 plt.style.use('dark_background')
 animator = animation.FuncAnimation(fig, field.animate, frames=375, interval=2, fargs=(fig,), save_count=400)
 writergif = animation.PillowWriter(fps=30)
-animator.save('solarsystemanimation.gif', writergif)
+animator.save('solarsystemanimationearth.gif', writergif)
+#animator.save('solarsystemanimation.gif', writergif)
 #animator.save('solarsysteminnercicleanimation.gif', writergif)
 plt.show()
